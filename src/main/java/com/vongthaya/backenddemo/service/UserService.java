@@ -7,6 +7,9 @@ import com.vongthaya.backenddemo.exception.UserException;
 import com.vongthaya.backenddemo.mapper.UserMapper;
 import com.vongthaya.backenddemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -102,9 +105,7 @@ public class UserService {
     }
 
     public Optional<User> findByEmail(String email) {
-        Optional<User> userOp = userRepository.findByEmail(email);
-
-        return userOp;
+        return userRepository.findByEmail(email);
     }
 
     public UserResponse update(UpdateUserDTO updateUserDTO) throws BaseException {
@@ -124,6 +125,22 @@ public class UserService {
 
     public void deleteById(int id) {
         userRepository.deleteById(id);
+    }
+
+    public String refreshToken() throws BaseException {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        int userId = (int) authentication.getPrincipal();
+
+        Optional<User> userOp = userRepository.findById(userId);
+
+        if (userOp.isEmpty()) {
+            throw UserException.notFound();
+        }
+
+        User user = userOp.get();
+
+        return tokenService.generateToken(user);
     }
 
 }

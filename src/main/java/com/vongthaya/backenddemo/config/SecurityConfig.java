@@ -14,8 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
     private final TokenFilter tokenFilter;
 
     @Autowired
@@ -30,21 +32,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(config -> {
-            config.requestMatchers(HttpMethod.POST, "/user/register").anonymous()
-                    .requestMatchers(HttpMethod.POST, "/user/login").anonymous()
-                    .anyRequest().authenticated();
-        });
+        http.csrf().disable();
 
         // add this tokenFilter before this UsernamePasswordAuthenticationFilter (basic authentication)
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.cors().disable();
+        http.authorizeHttpRequests(config -> {
+            config.requestMatchers(HttpMethod.POST, "/user/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
+                    .anyRequest().authenticated();
+        });
 
-        // use http basic authentication
-        http.httpBasic().disable();
-
-        http.csrf().disable();
+        http.cors();
 
         return http.build();
     }

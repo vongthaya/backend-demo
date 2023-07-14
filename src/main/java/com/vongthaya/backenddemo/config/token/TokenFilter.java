@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // GenericFilterBean use for create custom filter
-@Component
+@Service
 public class TokenFilter extends GenericFilterBean  {
 
     private final TokenService tokenService;
@@ -60,7 +61,7 @@ public class TokenFilter extends GenericFilterBean  {
         // user_id
         int principal = decodedJWT.getClaim("principal").asInt();
         String role = decodedJWT.getClaim("role").asString();
-        String credentials = null;
+        String credentials = "123";
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(role));
 
@@ -76,6 +77,7 @@ public class TokenFilter extends GenericFilterBean  {
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authentication);
 
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
 }

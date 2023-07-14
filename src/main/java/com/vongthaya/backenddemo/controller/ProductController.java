@@ -1,5 +1,7 @@
 package com.vongthaya.backenddemo.controller;
 
+import com.vongthaya.backenddemo.exception.BaseException;
+import com.vongthaya.backenddemo.exception.UserException;
 import com.vongthaya.backenddemo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getProductById(@PathVariable("id") String id) {
+    public ResponseEntity<String> getProductById(@PathVariable("id") String id) throws BaseException  {
+
         String response = productService.getProductById(id);
 
         System.out.println(">>> response: " + response);

@@ -39,6 +39,16 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponseDTO> refreshToken() throws BaseException {
+        String token = userService.refreshToken();
+
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+        loginResponseDTO.setToken(token);
+
+        return ResponseEntity.ok(loginResponseDTO);
+    }
+
 //    @PostMapping("/upload-profile-picture")
 //    public ResponseEntity<String> uploadProfilePicture(@RequestPart MultipartFile file) {
 //        String response = userService.uploadProfilePicture(file);
